@@ -1,5 +1,4 @@
 import 'package:ezzeldeen_0522029/Provider/Item_provider.dart';
-import 'package:ezzeldeen_0522029/Provider/Login_provider.dart';
 import 'package:ezzeldeen_0522029/Provider/Signup_provider.dart';
 import 'package:ezzeldeen_0522029/Screen/Login_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create:(context)=>SignupProvider()),
-        ChangeNotifierProvider(create:(context)=>LoginProvider()),
-        ChangeNotifierProvider(create: (context) =>ItemProvider())
+        ChangeNotifierProvider(create:(context)=>RegisteProvider()),
+        ChangeNotifierProvider(create: (context) =>ProductProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

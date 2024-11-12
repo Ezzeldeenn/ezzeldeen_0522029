@@ -4,58 +4,44 @@ import 'package:ezzeldeen_0522029/Widget/Product_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-class ItemScreen extends StatelessWidget {
-  const ItemScreen({super.key});
+class ProductsScreen extends StatelessWidget {
+  const ProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Products"),
-      ),
-      body: FutureBuilder(
-        future: Provider.of<ItemProvider>(context, listen: false).fetchData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('An error occurred!'),
-            );
-          } else {
-            return Consumer<ItemProvider>(
-              builder: (context, obj, child) {
-                var data = obj.model;
-                if (data == null || data.isEmpty) {
-                  return Center(
-                    child: Text('No data available'),
-                  );
-                }
-                return ListView.separated(
-                  itemBuilder: (context, index) {
-                    final product = data[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Detail(product: product)));
-                      },
-                      child: ItemWidget(
-                        image: product.image,
-                        name: product.name,
-                        price: product.price,
+      appBar: AppBar(title:Center(child: Text("Welcome To Products Page")),),
+      body: Consumer<ProductProvider>(builder: (context, value, child) {
+        var obj = value.productModel;
+        if(obj==null)
+        {
+          value.getProductProvider();
+          return Center(child: CircularProgressIndicator());
+        }
+        else
+        {
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                      ProductDetailsScreen(name:obj.products[index]['name'],
+                        image: obj.products[index]['image'],
+                        description: obj.products[index]['description'],
                       ),
-                    );
-                  },
-                  separatorBuilder: (context, index) => SizedBox(height: 5, width: 5,),
-                  itemCount: data.length,
-                );
-              },
-            );
-          }
-        },
-      ),
+                  ));
+                },
+                child: ProductWidget (name:obj.products[index]['name'] ,
+
+                  image: obj.products[index]['image'],
+                ),
+              );
+            },
+            itemCount: obj.products.length,
+          );
+        }
+      },),
     );
   }
 }

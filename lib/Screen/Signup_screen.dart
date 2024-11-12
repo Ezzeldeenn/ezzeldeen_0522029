@@ -1,145 +1,92 @@
 import 'package:ezzeldeen_0522029/Provider/Signup_provider.dart';
-import 'package:ezzeldeen_0522029/Screen/Login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'login_screen.dart';
 class SignupScreen extends StatelessWidget {
-  final TextEditingController nameCont = TextEditingController();
-  final TextEditingController emailCont = TextEditingController();
-  final TextEditingController passwordCont = TextEditingController();
-  final TextEditingController phoneCont = TextEditingController();
-  final formkey = GlobalKey<FormState>();
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController name = TextEditingController();
+    TextEditingController phone = TextEditingController();
+    TextEditingController email = TextEditingController();
+    TextEditingController password = TextEditingController();
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign Up'),
-      ),
-      body: Consumer<SignupProvider>(
-        builder: (context, signupProvider, child) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: formkey,
-                child: Column(
+      appBar: AppBar(title:Center(child: Text("SignUp Page")),),
+      body: Consumer<RegisteProvider>(builder: (context, value, child)
+      {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: name,
+                  decoration: InputDecoration(
+                    suffix:Icon(Icons.account_circle_rounded),
+                    hintText: "Name",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                TextFormField(
+                  controller: phone,
+                  decoration: InputDecoration(
+                    suffix:Icon(Icons.phone),
+                    hintText: "Phone Number",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                TextFormField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    suffix:Icon(Icons.email),
+                    hintText: "Email",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                TextFormField(
+                  controller: password,
+                  decoration: InputDecoration(
+                    suffix:Icon(Icons.remove_red_eye),
+                    hintText: "Password",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                  ),obscureText:true,
+                ),
+                SizedBox(height: 50,),
+                OutlinedButton(
+                  onPressed: () async {
+                    bool signup = await Provider.of<RegisteProvider>(context,listen: false).signupProvider(name.text, phone.text, email.text, password.text);
+                    if(signup)
+                    {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                    }
+                    else
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please Fill The Data Correctly ")));
+                    }
+                  },
+                  child: Text("SignUp"),
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 20),
-                    TextFormField(
-                      controller: nameCont,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Name',
-                        suffix: Icon(Icons.account_circle_sharp),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        if (value.length < 3) {
-                          return 'Name must be at least 3 characters';
-                        }
-                        return null;
-                      },
+                    Text("Already have account"),
+                    TextButton(onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                    },
+                      child: Text("Login"),
                     ),
-                    SizedBox(height: 20),
-                    TextFormField(
-                      controller: phoneCont,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Phone',
-                        suffix: Icon(Icons.local_phone_sharp),
-                      ),
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    TextFormField(
-                      controller: emailCont,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                        suffixIcon: Icon(Icons.email),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    TextFormField(
-                      controller: passwordCont,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                        suffix: Icon(Icons.remove_red_eye_sharp),
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (formkey.currentState!.validate()) {
-                          await signupProvider.signup(
-                            name: nameCont.text,
-                            phone: phoneCont.text,
-                            email: emailCont.text,
-                            password: passwordCont.text,
-                          );
-
-                          if (signupProvider.registerModel != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginScreen()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(signupProvider.Errorma ?? 'Signup failed')),
-                            );
-                          }
-                        }
-                      },
-                      child: Text('Sign Up'),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Already have an account?"),
-                        MaterialButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginScreen()),
-                            );
-                          },
-                          child: Text("Log in"),
-                        ),
-                      ],
-                    )
                   ],
                 ),
-              ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },),
     );
   }
 }
